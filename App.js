@@ -22,14 +22,27 @@ export default class App extends React.Component {
       let { text, todos } = prevState;
       return {
         text: '',
-        todos: [...todos, { key: text + todos.length, text /* completed */ }]
+        todos: [...todos, { key: text + todos.length, text, completed: false }]
       };
     });
-    console.log(this.state.todos);
   };
 
   handleTextChange = text => {
     this.setState({ text });
+  };
+
+  handleTodoClick = index => {
+    const todo = this.state.todos[index];
+    todo.completed = !todo.completed;
+    this.setState( prevState => {
+      const text = prevState.text;
+      const todos = [...prevState.todos];
+      todos[index] = todo;
+      return {
+        text, todos
+      };
+      console.log(this.state.todos[index].completed);
+    });
   };
 
   render() {
@@ -38,7 +51,7 @@ export default class App extends React.Component {
         {this.state.todos.length === 0 ? (
           <Text style={textFont}>You're free</Text>
         ) : (
-          <Text style={textFont}>You got stuff to do!</Text>
+          <Text style={textFont}>You have things to do!</Text>
         )}
         <TextInput
           onChangeText={this.handleTextChange}
@@ -48,10 +61,12 @@ export default class App extends React.Component {
         <Button onPress={() => this.handleButtonPress()} title="Add Todo" />
         <FlatList
           data={this.state.todos}
-          renderItem={({ item, key }) => {
+          renderItem={({ item, index }) => {
             return (
               <View key={item.key}>
-                <Text style={/* fill this in with a dynamic style*/ null}>
+                <Text 
+                onPress = {() => this.handleTodoClick(index)}
+                style={ item.completed === false ? notCompleted : completed }>
                   {item.text}
                 </Text>
               </View>
@@ -73,7 +88,18 @@ const styles = StyleSheet.create({
   },
   textFont: {
     fontSize: 28
+  },
+  notCompleted: {
+    margin: 10,
+    fontSize: 20,
+    color: 'red'
+  },
+  completed: {
+    margin: 10,
+    fontSize: 20,
+    textDecorationLine: 'line-through',
+    color: 'blue'
   }
 });
 
-const { container, textFont } = styles;
+const { container, textFont, notCompleted, completed } = styles;
