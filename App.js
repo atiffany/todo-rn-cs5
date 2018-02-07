@@ -4,81 +4,21 @@ import {
   Text,
   View,
   Button,
-  TextInput,
-  FlatList
 } from 'react-native';
+import { StackNavigator } from 'react-navigation';
+import Todos from './Todos';
 
-export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      text: '',
-      todos: []
-    };
-  }
-
-  handleButtonPress = () => {
-    this.setState(prevState => {
-      let { text, todos } = prevState;
-      return {
-        text: '',
-        todos: [...todos, { key: text + todos.length, text, completed: false }]
-      };
-    });
-  };
-
-  handleTextChange = text => {
-    this.setState({ text });
-  };
-
-  handleCompletedToggle = todoKey => {
-    const todos = this.state.todos.slice();
-    todos.map(todo => {
-      if (todo.key === todoKey) {
-        return (todo.completed = !todo.completed);
-      }
-    });
-    this.setState({ todos });
-  };
-
-  render() {
-    return (
-      <View style={container}>
-        {this.state.todos.length === 0 ? (
-          <Text style={textFont}>You're free</Text>
-        ) : (
-          <Text style={textFont}>You have things to do!</Text>
-        )}
-        <TextInput
-          onChangeText={this.handleTextChange}
-          value={this.state.text}
-          placeholder="Add Todo"
-        />
-        <Button onPress={() => this.handleButtonPress()} title="Add Todo" />
-        <FlatList
-          data={this.state.todos}
-          renderItem={({ item, index }) => {
-            return (
-              <View key={item.key}>
-                <Text
-                  onPress={() => this.handleCompletedToggle(item.key)}
-                  style={item.completed ? styles.lineThrough : null}
-                >
-                  {item.text}
-                </Text>
-              </View>
-            );
-          }}
-        />
-      </View>
-    );
-  }
+const Home = props => {
+  const { navigate } = props.navigation;
+  return (
+    <View style={container}>
+      <Text style={textFont}>Home</Text>
+      <Button style={textFont} onPress={() => navigate('todos')} title='Todos' />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  lineThrough: {
-    textDecorationLine: 'line-through'
-  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -89,17 +29,14 @@ const styles = StyleSheet.create({
   textFont: {
     fontSize: 28
   },
-  notCompleted: {
-    margin: 10,
-    fontSize: 20,
-    color: 'red'
-  },
-  completed: {
-    margin: 10,
-    fontSize: 20,
-    textDecorationLine: 'line-through',
-    color: 'blue'
-  }
+
 });
 
-const { container, textFont, notCompleted, completed } = styles;
+const { container, textFont } = styles;
+
+const Routes = StackNavigator({
+  home: { screen: Home },
+  todos: { screen: Todos }
+})
+
+export default Routes;
