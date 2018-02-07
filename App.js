@@ -31,18 +31,14 @@ export default class App extends React.Component {
     this.setState({ text });
   };
 
-  handleTodoClick = index => {
-    const todo = this.state.todos[index];
-    todo.completed = !todo.completed;
-    this.setState( prevState => {
-      const text = prevState.text;
-      const todos = [...prevState.todos];
-      todos[index] = todo;
-      return {
-        text, todos
-      };
-      console.log(this.state.todos[index].completed);
+  handleCompletedToggle = todoKey => {
+    const todos = this.state.todos.slice();
+    todos.map(todo => {
+      if (todo.key === todoKey) {
+        return (todo.completed = !todo.completed);
+      }
     });
+    this.setState({ todos });
   };
 
   render() {
@@ -64,9 +60,10 @@ export default class App extends React.Component {
           renderItem={({ item, index }) => {
             return (
               <View key={item.key}>
-                <Text 
-                onPress = {() => this.handleTodoClick(index)}
-                style={ item.completed === false ? notCompleted : completed }>
+                <Text
+                  onPress={() => this.handleCompletedToggle(item.key)}
+                  style={item.completed ? styles.lineThrough : null}
+                >
                   {item.text}
                 </Text>
               </View>
@@ -79,6 +76,9 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  lineThrough: {
+    textDecorationLine: 'line-through'
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
